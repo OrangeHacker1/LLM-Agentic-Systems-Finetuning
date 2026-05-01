@@ -142,7 +142,7 @@ Forgetting Analysis
 | Forgetting Detected | No |
 
 | Model Checkpoint | Alpaca Judge Win Rate | ROUGE-L / BERTScore | JSON Validity | Schema Compliance | Exact Match |
-|------|------|----------|------------|------------|-------|--------|
+|------------------|-----------------------|---------------------|---------------|-------------------|-------------|
 | Stage 0: Base | xxx | xxx | xxx | xxx | xxx |
 | Stage 1: Alpaca | xxx | xxx | xxx | xxx | xxx |
 | Stage 2: Teacher JSON | xxx | xxx | xxx | xxx | xxx |
