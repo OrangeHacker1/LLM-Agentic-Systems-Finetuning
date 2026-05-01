@@ -12,11 +12,15 @@ def main():
     config = load_config()
 
     # 🔥 Define learning rates for ablation
-    learning_rates = [
-        2e-5,   # baseline
-        5e-5,   # medium
-        1e-4    # strong
-    ]
+
+    learning_rates = config["stage2"]["learning_rates"]
+
+    # Maual
+    #learning_rates = [
+    #    2e-5,   # baseline
+    #    5e-5,   # medium
+    #    1e-4    # strong
+    #]
 
     print(f"Ablation Learning Rates: {learning_rates}")
 
