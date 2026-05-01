@@ -141,6 +141,12 @@ Forgetting Analysis
 | Tie Rate | 0.7675 |
 | Forgetting Detected | No |
 
+| Model Checkpoint | Alpaca Judge Win Rate | ROUGE-L / BERTScore | JSON Validity | Schema Compliance | Exact Match |
+|------|------|----------|------------|------------|-------|--------|
+| Stage 0: Base | xxx | xxx | xxx | xxx | xxx |
+| Stage 1: Alpaca | xxx | xxx | xxx | xxx | xxx |
+| Stage 2: Teacher JSON | xxx | xxx | xxx | xxx | xxx |
+
 ## Json Structure Evaluation
 
 This is where the results seem a bit strange. According to the teacher model, the stage two model does answer ccorrectly. However, there seems to be an issue creating the valid json format. This can be seen due to the 0% json valid rate. This needs to be looked into. I am planning to run an albanation study to see if training rate has any effect on this. The json validator does seem to be working, but I would need to edit the code to have the LLM give all its results to see what it is doing wrong. (My guess is that it might be defining the problem or using think blocks before the json.)    
