@@ -141,6 +141,8 @@ Forgetting Analysis
 | Tie Rate | 0.7675 |
 | Forgetting Detected | No |
 
+
+Final Model Accuracy (Cleaned data for JSON training)
 | Model Checkpoint | Alpaca Judge Win Rate | ROUGE-L / BERTScore | JSON Validity | Schema Compliance | Exact Match |
 |------------------|-----------------------|---------------------|---------------|-------------------|-------------|
 | Stage 0: Base | xxx | xxx | xxx | xxx | xxx |
