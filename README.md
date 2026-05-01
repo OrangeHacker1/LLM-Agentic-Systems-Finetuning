@@ -5,6 +5,14 @@ The goal is to see fine tuning a small LLM on Alpaca-style instruction data and 
 This project is broken up into two sections. One portion of then code is designed to build the datasets for evaluation and training. For this project, I will include the json files used for reproducability.    
 The primary code for this project was run on an HPC server, the UTSA ARC server. This is where the code was loaded and run. Anaconda was enabled before starting the project. The project's code does not activate the python enviornment.      
 
+You will also need to add an '.env' file.   
+
+        TEACHER_BASE_URL=http://10.246.100.230/v1 
+        #your_api_url_here
+        TEACHER_MODEL="llama-3.3-70b-instruct-awq" 
+        #gpt-4o
+        TEACHER_API_KEY=<REDACTED>
+
 # How to Run
 This project has 5 main bash files. It is important to note that you will need to update the bash files to match your working directory, your abc123. The bash code usage is as follows:
 
