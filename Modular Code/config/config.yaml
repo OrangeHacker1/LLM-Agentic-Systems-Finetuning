@@ -1,0 +1,91 @@
+###
+# Configuration for Teacher Dataset Generation
+###
+
+generation:
+  temperature: 0.2        # LOW = deterministic JSON
+  max_tokens: 512         # JSON doesn’t need huge outputs
+  retries: 3              # retry invalid JSON
+
+# Temperature: This temperature will help m,aintain consistency.
+# Retries: This will help make sure there are no invalid json files.
+
+dataset:
+  path: data/alpaca_train.jsonl
+  max_samples: 1000
+  eval_split: 0.05     # 5% evaluation set
+  train_size: 1000     # Teacher Model
+  eval_size: 100       # Teacher Model
+
+tasks:
+  types:
+    - extraction
+    - classification
+    - schema
+    - repair
+    - tool
+
+logging:
+  path: logs/data_generation/
+
+self_consistency:
+  samples: 1              # Not needed here (keep 1)
+
+
+###
+# NEW: Training Configuration (Stage 1)
+###
+
+model:
+  name: microsoft/phi-3-mini-4k-instruct
+  max_length: 1024
+
+training:
+  output_dir: ./outputs/stage1
+  batch_size: 4
+  eval_batch_size: 4
+  gradient_accumulation_steps: 4
+  epochs: 3
+  learning_rate: 2e-5
+  logging_steps: 25
+  save_steps: 500
+  eval_steps: 500
+  bf16: true
+  
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+
+###
+# NEW: Evaluation Configuration (Stage 4)
+###
+evaluation:
+  alpaca_eval_path: data/eval/alpaca_eval.jsonl
+  json_eval_path: data/eval/json_eval.jsonl
+  output_dir: results/phase4
+  max_new_tokens: 256
+  judge_temperature: 0
+
+###
+# NEW: Training Configuration (Stage 2)
+###
+stage2:
+  output_dir: ./outputs/stage2
+  learning_rates:
+    - 2e-5     # baseline
+    - 5e-5     # medium
+    - 1e-4     # high
+
+  batch_size: 4
+  gradient_accumulation_steps: 4
+  epochs: 2
+
+  checkpoint:
+    stage1_path: ./outputs/stage1

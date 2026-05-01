@@ -1,0 +1,14 @@
+transformers==4.44.2
+datasets
+accelerate
+peft
+bitsandbytes
+sentencepiece
+scipy
+scikit-learn
+pyyaml
+openai
+python-dotenv
+tqdm
+numpy
+regex
