@@ -147,7 +147,7 @@ Final Model Accuracy (Cleaned data for JSON training)
 |------------------|-----------------------|---------------------|---------------|-------------------|-------------|
 | Stage 0: Base | xxx | xxx | xxx | xxx | xxx |
 | Stage 1: Alpaca | xxx | xxx | xxx | xxx | xxx |
-| Stage 2: Teacher JSON | xxx | xxx | xxx | xxx | xxx |
+| Stage 2: Teacher JSON | xxx | 7.958 | 0.0 | 0.7 | xxx |
 
 ## Json Structure Evaluation
 
@@ -162,9 +162,33 @@ According to ChatGPT, I had it look over the 2000+ json results, failures typica
 
 Based on the results given, stage two takes a slight hit to its accuracy. This shows that there was a decent bit of damage done to the mode. This shows that the stage 2 training is updating the model and causing issues. The initial model performed better, as expected.
 
-## Albination Study
+## Ablation Study
 
-Errors occurred during saving.      
+Errors occurred during saving. This resullted in needing to redo the Ablation study.      
+    
+ablation LR: 2e05      
+
+| Metric | Value |
+|------|------|
+| JSON Valid Rate | 0.0 |
+| JSON Teacher Pass Rate | 0.72 |
+| Alpaca Score | 8.03 |
+
+ablation LR: 2e05      
+
+| Metric | Value |
+|------|------|
+| JSON Valid Rate | 0.0 |
+| JSON Teacher Pass Rate | 0.7 |
+| Alpaca Score | 7.96 |
+
+ablation LR: 2e05      
+
+| Metric | Value |
+|------|------|
+| JSON Valid Rate | 0.0 |
+| JSON Teacher Pass Rate | 0.7 |
+| Alpaca Score | 7.96 |
 
 # Analysis
 
@@ -184,5 +208,9 @@ Final Improvements:
         Narrow Training Data (This will help it better match the structure and produce json files.)
 
 # Prompt Engineering
+
+While doing this project, I worked thorugh the prompts to create a generic question answering LLM mode. TO achieve this, the prompts could only use bare bone calls. Otherwise, this will result in seeing if Zero Shot is effective, as opposed to if the actual LLM has internally learned the patterns.    
+In order to better improve the efficiency of the Judge, I had the judge go into specific details to determine which response was better for answering the question. The Judge prompt can be seen below. (This is the pairwise prompt.)  
+A second judge script was added to see if the LLM schematic was actually working properly. This has a decent level of leway with responses. This was why, despite a zero percent pass rate, the teacher rated the stage 2 model highly.     
 
 # Appendix: Full Prompts
