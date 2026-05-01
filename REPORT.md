@@ -1,4 +1,5 @@
 # Methodology
+Generative AI was used to create the code for this project and help with debugging. It was also used to go over the results and help outline the results.        
 This project was broken into 6 phases. The phases are as follows:
 1. Data Construction
 2. Stage 1 Training
@@ -115,7 +116,43 @@ The dependencies are in the requirements.txt file and setup_enev.sh.
 
 # Experiments
 
+## Evaluation Metrics
 
+Structured Output - Measures the ability to produce a valid json structure.    
+General Instruction Following (Alpacha Dataset) - The ability to answer questions from the alpaca dataset.    
+Forgetting Analysis - The impact the stage 2 training had on the model.    
+
+## Charts
+
+Alpaca Accuracy and Json Structure Accuracy
+
+| Metric | Value |
+|------|------|
+| JSON Valid Rate | 0.0 |
+| JSON Teacher Pass Rate | 0.7 |
+| Alpaca Score | 7.96 |
+
+Forgetting Analysis
+
+| Metric | Value |
+|------|------|
+| Stage 1 Win Rate | 0.20 |
+| Stage 2 Win Rate | 0.0325 |
+| Tie Rate | 0.7675 |
+| Forgetting Detected | No |
+
+## Json Structure Evaluation
+
+This is where the results seem a bit strange. According to the teacher model, the stage two model does answer ccorrectly. However, there seems to be an issue creating the valid json format. This can be seen due to the 0% json valid rate. This needs to be looked into. I am planning to run an albanation study to see if training rate has any effect on this. I will also go over the valid tester to see if there was a silent issue.    
+
+## Alpacha Evaluation
+
+After training the model to answer with a json format, the model maintained a general score around 8 out of 10 for all of the evaluation prompts. This showed that the model was able to retain its ability to answer the alpaca questions.   
+According to ChatGPT, I had it look over the 2000+ json results, failures typically occured with computational tasks, like arithmatic.    
+
+## Forgetting Analysis
+
+Based on the results given, stage two takes a slight hit to its accuracy. This shows that there was a decent bit of damage done to the mode. This shows that the stage 2 training is updating the model and causing issues. The initial model performed better, as expected.
 
 # Analysis
 
