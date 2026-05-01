@@ -156,7 +156,24 @@ Based on the results given, stage two takes a slight hit to its accuracy. This s
 
 ## Albination Study
 
+Errors occurred during saving.      
+
 # Analysis
+
+Qualitative comparison of outputs across
+checkpoints, failure case analysis, discussion of
+forgetting vs retention, what the results imply about
+sequential fine-tuning
+
+Looking at the results, it can be implied that the model had issues learning how to give json only responses. The hardcoded json would fail 100% of the time. This implies there was failure in the training data. In order to improve the results, it is necessary to change the training data. Occording to the LLM I trained on, most of the results are actually acurate. This lead me to questioning how far off the trained model actually was. This was the focus of the albiration study. By testing the learning rate, I could determine whether there was just a biit more of training needed vs the training data being unreliable.    
+Looking over the training data, I found that there were some issues. The structure was somewhat inconsistent. The structure would change based onn the task being done. If I were to constrain or unify the training data, it would be possible to increase the accuracy. There were weak formatting issues. The trainer model also add extra stuff. One solution for better results is to limit the amount of tasks. Another issue was the fix json tasks. This could cause confusion.     
+After analysis, there were several things that would need to be tested and further debugged. First, the model for stage 2 should have rules added. By adding rules, it is possible to improve the results. This might scew results, but the teacher model said that the idea and scemantics were good.    
+Looking at explicit examples, using ChatGPT to scan the file, there were examples that were using single quotes, examples that did not add quotes, and examples with extra text in the output, like: "Here is your json: {STUFF}". In order to increase the results, it is necessary to clean the data and retrain the models This will show if cleaned data is better.    
+Final Improvements:
+
+        Clean Training Data (Use a clean function to remove false training data.)
+        Add Rules and Restrictions (Could help, but does not show if the model is working properly. It should default answer in json.)
+        Narrow Training Data (This will help it better match the structure and produce json files.)
 
 # Prompt Engineering
 
