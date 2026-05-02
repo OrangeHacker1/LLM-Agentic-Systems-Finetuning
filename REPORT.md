@@ -214,3 +214,256 @@ In order to better improve the efficiency of the Judge, I had the judge go into 
 A second judge script was added to see if the LLM schematic was actually working properly. This has a decent level of leway with responses. This was why, despite a zero percent pass rate, the teacher rated the stage 2 model highly.     
 
 # Appendix: Full Prompts
+
+Judge Prompt: (Stored in a Python File)
+
+        JUDGE_PROMPT = """
+        You are an expert evaluator comparing two model responses.
+        
+        Evaluate Response A and Response B for the user prompt below.
+        
+        Be strict and unbiased. Ignore response order.
+        
+        User Prompt:
+        {instruction}
+        
+        Optional Input:
+        {input_text}
+        
+        Response A:
+        {response_a}
+        
+        Response B:
+        {response_b}
+        
+        Score each response from 1 to 5 on:
+        1. instruction_following
+        2. correctness
+        3. clarity
+        4. completeness
+        5. structured_output_validity
+        6. hallucination_risk
+        
+        Then choose a winner:
+        - "A"
+        - "B"
+        - "Tie"
+        
+        Return ONLY valid JSON in this schema:
+        
+        {
+          "response_a_scores": {
+            "instruction_following": int,
+            "correctness": int,
+            "clarity": int,
+            "completeness": int,
+            "structured_output_validity": int,
+            "hallucination_risk": int
+          },
+          "response_b_scores": {
+            "instruction_following": int,
+            "correctness": int,
+            "clarity": int,
+            "completeness": int,
+            "structured_output_validity": int,
+            "hallucination_risk": int
+          },
+          "winner": "A|B|Tie",
+          "justification": "brief reason"
+        }
+        """
+
+Pairwise Prompt for Teacher: (This is used for measuring forgetting.)    
+        
+        PAIRWISE_PROMPT = '''You are an impartial evaluator.
+        Task Prompt:\n{prompt}\n\nResponse A:\n{resp_a}\n\nResponse B:\n{resp_b}\n\nScore each response from 1-5 for:
+        - instruction_following
+        - correctness
+        - clarity
+        - completeness
+        - structured_output_validity
+        - hallucination_risk
+        
+        Return ONLY JSON:
+        {{
+          "response_a_scores": {{...}},
+          "response_b_scores": {{...}},
+          "winner": "A|B|Tie",
+          "justification": "short reason"
+        }}
+        '''
+
+Teacher Prompts:
+        
+        # prompts/teacher_prompts.py
+        
+        TEACHER_PROMPTS = {
+        
+            "extraction": """
+        Extract structured information as JSON.
+        
+        Rules:
+        - Output ONLY valid JSON
+        - No explanations
+        - Use double quotes
+        
+        Schema:
+        {
+          "name": string,
+          "location": string,
+          "date": string
+        }
+        
+        Text:
+        {input}
+        """,
+        
+            "classification": """
+        Classify the following text.
+        
+        Return ONLY JSON:
+        {
+          "label": "supported" | "refuted" | "neutral"
+        }
+        
+        Text:
+        {input}
+        """,
+        
+            "schema": """
+        Convert the text into structured JSON.
+        
+        Output ONLY JSON with meaningful keys.
+        
+        Text:
+        {input}
+        """,
+        
+            "repair": """
+        Fix the following broken JSON.
+        
+        Return ONLY valid JSON.
+        
+        Input:
+        {input}
+        """,
+        
+            "tool": """
+        Generate function arguments in JSON.
+        
+        Function:
+        get_weather(city: string, date: string)
+        
+        Input:
+        {input}
+        
+        Return ONLY JSON.
+        """
+        }
+
+Custom Prompts: ( Used for making questions. )
+        
+        # prompts/custom_prompts.py
+        
+        CUSTOM_PROMPTS = {
+        
+            "extraction": [
+                # EASY (10)
+                "Extract name, location, and date from: John visited Paris on July 5th.",
+                "Extract entities from: Alice went to Tokyo on March 3rd.",
+                "Extract details from: Bob traveled to NYC on Jan 1.",
+                "Find name/location/date: Sarah visited London in June.",
+                "Extract structured info: Mike went to Berlin on Feb 2.",
+                "Extract details: Emma visited Rome in April.",
+                "Extract entities: Tom traveled to Madrid on May 6.",
+                "Extract info: Lisa visited Dubai in August.",
+                "Extract details: Jack went to Toronto in September.",
+                "Extract info: Anna visited Sydney in October.",
+        
+                # MEDIUM (20)
+                "From text extract name/location/date: John and Mary visited Paris on July 5th.",
+                "Extract structured entities from paragraph: Alice traveled across Tokyo and Kyoto in March.",
+                "Extract key fields: Bob moved from LA to NYC in 2020.",
+                "Extract entities from: Sarah visited multiple cities including London and Paris.",
+                "Extract name/location/date from mixed text with noise: ### Mike Berlin Feb 2 ###",
+                "Extract structured info from paragraph with multiple dates.",
+                "Extract entities even if order is scrambled.",
+                "Extract fields even if date format varies.",
+                "Extract info from paragraph with extra irrelevant text.",
+                "Extract structured data from informal sentence.",
+        
+                # HARD (20)
+                "Extract structured JSON from messy paragraph with multiple names and dates.",
+                "Extract entities from long paragraph with distractions.",
+                "Extract primary subject name/location/date ignoring irrelevant data.",
+                "Extract structured fields from noisy OCR-like text.",
+                "Extract entities from ambiguous sentence.",
+                "Extract info when multiple candidates exist.",
+                "Extract main event details from paragraph.",
+                "Extract structured data from mixed language text.",
+                "Extract key info from narrative paragraph.",
+                "Extract entities from multi-sentence paragraph.",
+            ],
+        
+            "classification": [
+                # EASY
+                "Classify: The evidence supports the claim.",
+                "Classify: This is false.",
+                "Classify: Not enough information.",
+                "Label as supported/refuted/neutral: Evidence confirms hypothesis.",
+                "Classify: The claim is wrong.",
+        
+                # MEDIUM
+                "Classify with reasoning: The data partially supports the claim.",
+                "Determine label: Mixed evidence exists.",
+                "Classify ambiguous statement.",
+                "Classify nuanced claim.",
+                "Classify uncertain statement.",
+        
+                # HARD
+                "Classify paragraph with conflicting evidence.",
+                "Classify long argument.",
+                "Determine label from complex reasoning.",
+                "Classify scientific claim.",
+                "Classify multi-sentence argument.",
+            ],
+        
+            "schema": [
+                "Generate JSON for: Product iPhone costs $999 by Apple.",
+                "Convert to schema: Tesla Model S costs $80,000.",
+                "Create JSON object for: Book titled X by author Y.",
+                "Generate structured data for company description.",
+                "Convert paragraph into structured JSON.",
+                "Generate JSON for nested schema.",
+                "Create structured object with multiple attributes.",
+                "Generate JSON from semi-structured text.",
+                "Convert product description into schema.",
+                "Generate structured JSON from messy description.",
+            ],
+        
+            "repair": [
+                "Fix JSON: {name: John, location: Paris}",
+                "Repair: {'city': 'Austin', 'temp': 75,}",
+                "Fix malformed JSON with missing quotes.",
+                "Correct JSON with trailing commas.",
+                "Repair nested broken JSON.",
+                "Fix JSON with wrong types.",
+                "Repair JSON missing brackets.",
+                "Fix JSON with duplicated keys.",
+                "Correct JSON formatting errors.",
+                "Repair invalid JSON string.",
+            ],
+        
+            "tool": [
+                "Generate arguments: Weather in Austin tomorrow.",
+                "Call function: get_weather for NYC Monday.",
+                "Create JSON for weather API.",
+                "Generate tool arguments from query.",
+                "Produce JSON for function call.",
+                "Generate API call arguments.",
+                "Convert question to tool JSON.",
+                "Create structured function parameters.",
+                "Generate JSON for API input.",
+                "Produce tool call JSON.",
+            ]
+        }
