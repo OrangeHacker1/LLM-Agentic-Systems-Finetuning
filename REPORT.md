@@ -174,21 +174,21 @@ ablation LR: 2e05
 | JSON Teacher Pass Rate | 0.72 |
 | Alpaca Score | 8.03 |
 
-ablation LR: 2e05      
+ablation LR: 5e05      
 
 | Metric | Value |
 |------|------|
 | JSON Valid Rate | 0.0 |
-| JSON Teacher Pass Rate | 0.7 |
-| Alpaca Score | 7.96 |
+| JSON Teacher Pass Rate | 0.72 |
+| Alpaca Score | 8.03 |
 
-ablation LR: 2e05      
+ablation LR: .00001     
 
 | Metric | Value |
 |------|------|
 | JSON Valid Rate | 0.0 |
-| JSON Teacher Pass Rate | 0.7 |
-| Alpaca Score | 7.96 |
+| JSON Teacher Pass Rate | 0.72 |
+| Alpaca Score | 8.03 |
 
 # Analysis
 
