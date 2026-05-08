@@ -124,7 +124,7 @@ Forgetting Analysis - The impact the stage 2 training had on the model.
 
 ## Charts
 
-Alpaca Accuracy and Json Structure Accuracy
+Initial Alpaca Accuracy and Json Structure Accuracy
 
 | Metric | Value |
 |------|------|
@@ -132,26 +132,37 @@ Alpaca Accuracy and Json Structure Accuracy
 | JSON Teacher Pass Rate | 0.7 |
 | Alpaca Score | 7.96 |
 
-Forgetting Analysis
+Initial Forgetting Analysis
 
 | Metric | Value |
 |------|------|
 | Stage 1 Win Rate | 0.20 |
 | Stage 2 Win Rate | 0.0325 |
 | Tie Rate | 0.7675 |
-| Forgetting Detected | No |
+| Forgetting Detected | Yes |
 
 
 Final Model Accuracy (Cleaned data for JSON training)
-| Model Checkpoint | Alpaca Judge Win Rate | ROUGE-L / BERTScore | JSON Validity | Schema Compliance | Exact Match |
-|------------------|-----------------------|---------------------|---------------|-------------------|-------------|
-| Stage 0: Base | xxx | xxx | xxx | xxx | xxx |
-| Stage 1: Alpaca | xxx | xxx | xxx | xxx | xxx |
-| Stage 2: Teacher JSON | xxx | 7.958 | 0.0 | 0.7 | xxx |
+| Model Checkpoint | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
+|------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|
+| Stage 0: Base | 0.567 | 0.215 | 0.866 | 0.359 | 0.359 | 0.0 |
+| Stage 1: Alpaca | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
+| Stage 2: Teacher JSON | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
+
+Forgetting Analysis
+
+| Metric | Value |
+|------|------|
+| Stage 1 Win Rate | 0.035 |
+| Stage 2 Win Rate | 0.005 |
+| Tie Rate | 0.96 |
+| Forgetting Detected | Yes |
 
 ## Json Structure Evaluation
 
-This is where the results seem a bit strange. According to the teacher model, the stage two model does answer ccorrectly. However, there seems to be an issue creating the valid json format. This can be seen due to the 0% json valid rate. This needs to be looked into. I am planning to run an albanation study to see if training rate has any effect on this. The json validator does seem to be working, but I would need to edit the code to have the LLM give all its results to see what it is doing wrong. (My guess is that it might be defining the problem or using think blocks before the json.)    
+Initially, this is where the results seem a bit strange. According to the teacher model, the stage two model does answer ccorrectly. However, there seems to be an issue creating the valid json format. This can be seen due to the 0% json valid rate. This needs to be looked into. I am planning to run an albanation study to see if training rate has any effect on this. The json validator does seem to be working, but I would need to edit the code to have the LLM give all its results to see what it is doing wrong. (My guess is that it might be defining the problem or using think blocks before the json.)  
+After going over the training data, I created a new dataset. This dataset was cleaned to ensure that the data sent would be valid sintax for json. After running the training for stage 3 again, the model started properly answering with json formatting, although the results were low. Upon examining the results in depth, I found that the model had overfift due to the repetitive nature of the training data.     
+
 
 ## Alpacha Evaluation
 
@@ -160,11 +171,12 @@ According to ChatGPT, I had it look over the 2000+ json results, failures typica
 
 ## Forgetting Analysis
 
-Based on the results given, stage two takes a slight hit to its accuracy. This shows that there was a decent bit of damage done to the mode. This shows that the stage 2 training is updating the model and causing issues. The initial model performed better, as expected.
+The model shows slight levels of forgetting. This showed that both models functioned simillarly to each other.
 
 ## Ablation Study
 
-Errors occurred during saving. This resullted in needing to redo the Ablation study.      
+The accuracy for json structure was extremely low. In order to test if it was the fault of the training data, I desidded to test the learning rate of the model.    
+This albination study will also be used to test the level of forgetting (the effects the learning has on the alpaca score).    
     
 ablation LR: 2e05      
 
@@ -197,21 +209,24 @@ checkpoints, failure case analysis, discussion of
 forgetting vs retention, what the results imply about
 sequential fine-tuning
 
-Looking at the results, it can be implied that the model had issues learning how to give json only responses. The hardcoded json would fail 100% of the time. This implies there was failure in the training data. In order to improve the results, it is necessary to change the training data. Occording to the LLM I trained on, most of the results are actually acurate. This lead me to questioning how far off the trained model actually was. This was the focus of the albiration study. By testing the learning rate, I could determine whether there was just a biit more of training needed vs the training data being unreliable.    
-Looking over the training data, I found that there were some issues. The structure was somewhat inconsistent. The structure would change based onn the task being done. If I were to constrain or unify the training data, it would be possible to increase the accuracy. There were weak formatting issues. The trainer model also add extra stuff. One solution for better results is to limit the amount of tasks. Another issue was the fix json tasks. This could cause confusion.     
-After analysis, there were several things that would need to be tested and further debugged. First, the model for stage 2 should have rules added. By adding rules, it is possible to improve the results. This might scew results, but the teacher model said that the idea and scemantics were good.    
-Looking at explicit examples, using ChatGPT to scan the file, there were examples that were using single quotes, examples that did not add quotes, and examples with extra text in the output, like: "Here is your json: {STUFF}". In order to increase the results, it is necessary to clean the data and retrain the models This will show if cleaned data is better.    
+After completing this project, the results revealed several trends. For some reason, the results for both model 1 and model 2 are the same. This was concerning. The models should have been different. After going over the code, there shouln't be any reason for similar results.   
+
+Looking at the initial results, it can be seen that there were issues. Stage 2 was not learning propperly. This is partially due to the dataset having bad examples. This lead to malformed json structure, but the teacher agent was able to understand what model 2 meant.     
+The original model is shown outperforming the trained models. This is also strange, as it should fail alpaca without any additional info.    
+After the ablation study completed ...
+   
 Final Improvements:
 
-        Clean Training Data (Use a clean function to remove false training data.)
-        Add Rules and Restrictions (Could help, but does not show if the model is working properly. It should default answer in json.)
-        Narrow Training Data (This will help it better match the structure and produce json files.)
+        Clean Training Data (Use a clean function to remove false training data.) - Completed
+        Add Rules and Restrictions (Could help, but does not show if the model is working properly. It should default answer in json.) -Completed
+        Add better prompt questions for generalization. -WIP
 
 # Prompt Engineering
 
 While doing this project, I worked thorugh the prompts to create a generic question answering LLM mode. TO achieve this, the prompts could only use bare bone calls. Otherwise, this will result in seeing if Zero Shot is effective, as opposed to if the actual LLM has internally learned the patterns.    
 In order to better improve the efficiency of the Judge, I had the judge go into specific details to determine which response was better for answering the question. The Judge prompt can be seen below. (This is the pairwise prompt.)  
 A second judge script was added to see if the LLM schematic was actually working properly. This has a decent level of leway with responses. This was why, despite a zero percent pass rate, the teacher rated the stage 2 model highly.     
+After going over the code, I found that the data was not generalizing well enough. The model was answering the same question over and over again. The structure improved, but this was not as good as it could have been. This is likely due to the increase in the amount of data increasing to 20,000 without increasing the amount of custom prompts. Instead, the teacher agent would create a question to match the type of question. This is currently a work in progress. Due to time constraints, this may not have been implimented yet.    
 
 # Appendix: Full Prompts
 
