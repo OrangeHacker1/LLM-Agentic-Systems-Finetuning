@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+
+#
+#   This needs to be changed to match the propper abc123.
+#   You need to modify this to ensure the code works.
+#
 export CONDA_ENVS_PATH="/work/vxt660/.conda_envs"
 export HF_HOME="/work/vxt660/.HF_cache"
 

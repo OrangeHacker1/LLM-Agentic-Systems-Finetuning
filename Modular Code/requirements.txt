@@ -12,3 +12,5 @@ python-dotenv
 tqdm
 numpy
 regex
+bert-score
+rouge-score

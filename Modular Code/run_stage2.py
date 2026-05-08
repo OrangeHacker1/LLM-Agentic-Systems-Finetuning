@@ -1,14 +1,55 @@
 from stage_2_training.model import load_stage2_model
+from stage_2_training.model import load_stage1_model
 from stage_2_training.dataset import load_and_prepare_dataset
 from stage_2_training.trainer import get_trainer
 #from stage_2_training.evaluator import evaluate_model
 
+# LORA CONFIG
+from peft import LoraConfig, get_peft_model
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig
+)
+
+from config.config_loader import load_config
+
+import os
 
 def main():
     print("===== Phase 3: Stage 2 Training =====")
 
+    config = load_config()
+
+    stage2_path = config["stage2"]["checkpoint"]["stage2_path"]
+
+    print(f"Output Directory: {stage2_path}")
+    output_dir = stage2_path
+
+    os.makedirs(output_dir, exist_ok=True)
+
     print("Loading model...")
-    model, tokenizer = load_stage2_model()
+    model, tokenizer = load_stage1_model()
+
+    print("Making new Lora Layer...")
+    peft_cfg = config["lora"]
+
+    lora_config = LoraConfig(
+        r=peft_cfg["r"],
+        lora_alpha=peft_cfg["alpha"],
+        lora_dropout=peft_cfg["dropout"],
+        bias="none",
+        task_type="CAUSAL_LM",
+        target_modules=peft_cfg["target_modules"]
+    )
+
+    # ✅ ADD adapter properly (DO NOT wrap again)
+    model.add_adapter("stage2", lora_config)
+
+    # ✅ Activate it
+    model.set_adapter("stage2")
+
+    model.print_trainable_parameters()
 
     print("Preparing dataset...")
     train_dataset, eval_dataset = load_and_prepare_dataset(tokenizer)
@@ -19,8 +60,15 @@ def main():
     print("Starting training...")
     trainer.train()
 
-    print("Saving model...")
-    trainer.save_model()
+    #rint("Saving model...")
+    #trainer.save_model()
+    print(f"Saving model at {output_dir}")
+
+    #output_dir = stage2_path
+
+    model.save_pretrained(output_dir)
+    tokenizer.save_pretrained(output_dir)
+    print(f"Save Successful: {output_dir}")
 
     # Phase 4
     #print("Running evaluation...")
@@ -32,91 +80,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-
-
-
-"""
-from config.config_loader import load_config
-from config.env_loader import load_environment
-
-from stage_2_training.dataset import load_json_dataset, preprocess_dataset
-from stage_2_training.model import load_model
-from stage_2_training.train import setup_trainer
-from stage_2_training.evaluator import evaluate_model
-
-
-def main():
-    # 1. Load config + environment
-    config = load_config()
-    env = load_environment()
-
-    stage2_cfg = config["stage2"]
-
-    # 2. Load dataset
-    dataset = load_json_dataset(stage2_cfg["data"]["path"])
-
-    # 3. Load model
-    model, tokenizer = load_model(config, stage2_cfg)
-
-    # 4. Preprocess dataset
-    dataset = preprocess_dataset(dataset, tokenizer, config)
-
-    # 5. Setup trainer
-    trainer = setup_trainer(model, tokenizer, dataset, config)
-
-    # 6. Train
-    trainer.train()
-
-    # 7. Save
-    trainer.save_model(stage2_cfg["output_dir"])
-
-    # 8. Evaluate
-    evaluate_model(model, tokenizer, config, env)
-
-
-if __name__ == "__main__":
-    main()"""
-
-
-"""""
-from config.config_loader import load_config
-from config.env_loader import load_environment
-
-from stage_2_training.dataset import load_json_dataset, preprocess_dataset
-from stage_2_training.model import load_model
-from stage_2_training.train import setup_trainer
-from stage_2_training.evaluator import evaluate_model
-
-
-def main():
-    # 1. Load config + environment
-    config = load_config()
-    env = load_environment()
-
-    stage2_cfg = config["stage2"]
-
-    # 2. Load dataset
-    dataset = load_json_dataset(stage2_cfg["data"]["path"])
-
-    # 3. Load model
-    model, tokenizer = load_model(config, stage2_cfg)
-
-    # 4. Preprocess dataset
-    dataset = preprocess_dataset(dataset, tokenizer, config)
-
-    # 5. Setup trainer
-    trainer = setup_trainer(model, tokenizer, dataset, config)
-
-    # 6. Train
-    trainer.train()
-
-    # 7. Save
-    trainer.save_model(stage2_cfg["output_dir"])
-
-    # 8. Evaluate
-    evaluate_model(model, tokenizer, config, env)
-
-
-if __name__ == "__main__":
-    main()
-    """

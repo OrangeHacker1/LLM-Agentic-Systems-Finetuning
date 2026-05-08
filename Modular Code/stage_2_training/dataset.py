@@ -1,4 +1,3 @@
-# stage_2_training/dataset.py
 from datasets import load_dataset
 from config.config_loader import load_config
 
@@ -87,62 +86,3 @@ def load_and_prepare_dataset(tokenizer):
     )
 
     return split["train"], split["test"]
-
-
-
-"""
-import json
-from datasets import Dataset
-
-
-def load_json_dataset(path):
-    data = []
-    with open(path, "r") as f:
-        for line in f:
-            data.append(json.loads(line))
-    return Dataset.from_list(data)
-
-
-def format_example(example):
-    return f"" "
-### Instruction:
-{example['instruction']}
-
-### Input:
-{example['input']}
-
-### Response:
-{example['output_str']}
-"" "
-
-
-def preprocess_dataset(dataset, tokenizer, config):
-    max_length = config["model"]["max_length"]
-
-    def tokenize(example):
-        text = format_example(example)
-
-        enc = tokenizer(
-            text,
-            truncation=True,
-            padding="max_length",
-            max_length=max_length
-        )
-
-        labels = enc["input_ids"].copy()
-        labels = [
-            token if token != tokenizer.pad_token_id else -100
-            for token in labels
-        ]
-
-        enc["labels"] = labels
-        return enc
-
-    dataset = dataset.map(tokenize, load_from_cache_file=False)
-
-    dataset.set_format(
-        type="torch",
-        columns=["input_ids", "attention_mask", "labels"]
-    )
-
-    return dataset"""

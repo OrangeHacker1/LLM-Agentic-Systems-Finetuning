@@ -13,6 +13,13 @@ Check:
 2. Matches expected structure?
 3. No hallucinated keys?
 
+Scoring:
+10 = excellent
+7 = good
+5 = partially correct
+3 = poor
+1 = incorrect
+
 Return ONLY:
 PASS or FAIL
 """
@@ -35,6 +42,13 @@ Score the model answer from 1 to 10 based on:
 - correctness
 - completeness
 - clarity
+
+Scoring:
+10 = excellent
+7 = good
+5 = partially correct
+3 = poor
+1 = incorrect
 
 Return ONLY a number (1-10).
 """

@@ -2,8 +2,12 @@
 set -e
 set -o pipefail
 
-echo "Starting Phase 3 (Stage 2 Training)"
+echo "Starting Phase 2 (Stage 1 Training)"
 
+#
+#   This needs to be changed to match the propper abc123.
+#   You need to modify this to ensure the code works.
+#
 export CONDA_ENVS_PATH="/work/vxt660/.conda_envs"
 export HF_HOME="/work/vxt660/.HF_cache"
 
@@ -15,15 +19,15 @@ ENV_PATH="/work/vxt660/.conda_envs/llm"
 source "$(conda info --base)/etc/profile.d/conda.sh"
 
 # Activate env
-conda activate /work/vxt660/.conda_envs/llm
+conda activate $ENV_PATH
 
 cd /work/vxt660/assignment3
 
 mkdir -p outputs
 mkdir -p logs
 
-echo "Phase 3 Starting Code"
+echo "Phase 2 Starting Code"
 
-python run_stage2.py | tee logs/phase3.log
+python train_stage1.py | tee logs/phase2.log
 
-echo "Phase 3 Complete"
+echo "Phase 2 Complete"
