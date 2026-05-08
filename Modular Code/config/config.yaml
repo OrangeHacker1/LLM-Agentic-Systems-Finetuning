@@ -70,6 +70,7 @@ evaluation:
   alpaca_eval_path: data/eval/alpaca_eval.jsonl
   json_eval_path: data/eval/json_eval.jsonl
   output_dir: results/phase4
+  output_dir_new: results/phase4_NEW
   max_new_tokens: 256
   judge_temperature: 0
 
@@ -87,5 +88,9 @@ stage2:
   gradient_accumulation_steps: 4
   epochs: 2
 
+
+# Checkpoint Directories
   checkpoint:
     stage1_path: ./outputs/stage1
+    stage2_path: ./outputs/stage2
+    stage2_path_final: ./outputs/stage2_final
