@@ -161,7 +161,7 @@ Forgetting Analysis
 ## Json Structure Evaluation
 
 Initially, this is where the results seem a bit strange. According to the teacher model, the stage two model does answer ccorrectly. However, there seems to be an issue creating the valid json format. This can be seen due to the 0% json valid rate. This needs to be looked into. I am planning to run an albanation study to see if training rate has any effect on this. The json validator does seem to be working, but I would need to edit the code to have the LLM give all its results to see what it is doing wrong. (My guess is that it might be defining the problem or using think blocks before the json.)  
-After going over the training data, I created a new dataset. This dataset was cleaned to ensure that the data sent would be valid sintax for json. After running the training for stage 3 again, the model started properly answering with json formatting, although the results were low. Upon examining the results in depth, I found that the model had overfift due to the repetitive nature of the training data.     
+After going over the training data, I created a new dataset. This dataset was cleaned to ensure that the data sent would be valid sintax for json. After running the training for stage 3 again, the model started properly answering with json formatting, although the results were low. Although this is also shown in the base model. An error occurred in the new json load. This would require changing to the original check.      
 
 
 ## Alpacha Evaluation
@@ -209,10 +209,10 @@ checkpoints, failure case analysis, discussion of
 forgetting vs retention, what the results imply about
 sequential fine-tuning
 
-After completing this project, the results revealed several trends. For some reason, the results for both model 1 and model 2 are the same. This was concerning. The models should have been different. After going over the code, there shouln't be any reason for similar results.   
+After completing this project, the results revealed several trends. For some reason, the results for both model 1 and model 2 are the same. This was concerning. The models should have been different. After going over the code, there shouln't be any reason for similar results. This questions whether the models are not learning during stage 2. This can be disproven by the albination study. By looking at the study, it can be determined if the models are or are not being trained.   
 
 Looking at the initial results, it can be seen that there were issues. Stage 2 was not learning propperly. This is partially due to the dataset having bad examples. This lead to malformed json structure, but the teacher agent was able to understand what model 2 meant.     
-The original model is shown outperforming the trained models. This is also strange, as it should fail alpaca without any additional info.    
+The original model is shown outperforming the trained models. This is also strange, as it should fail alpaca without any additional info. This sugjests that the original stage 1 model ended up being poisoned. In order to test for poisoning, the models will need to be retrained. Due to time constraints it will be dificult to run the entire project from start to end.        
 After the ablation study completed ...
    
 Final Improvements:
