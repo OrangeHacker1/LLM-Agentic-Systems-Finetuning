@@ -18,98 +18,103 @@ The next phase involves testing how much of an impact the retraining had on the 
 In order to complete this project, we needed to use several dependencies and hyperparameters. The hyperparameters used for this project are as follows:   
 
 (Parameters)
-    
-    ###
-    # Configuration for Teacher Dataset Generation
-    ###
-    
-    generation:
-      temperature: 0.2        # LOW = deterministic JSON
-      max_tokens: 512         # JSON doesn’t need huge outputs
-      retries: 3              # retry invalid JSON
-    
-    # Temperature: This temperature will help m,aintain consistency.
-    # Retries: This will help make sure there are no invalid json files.
-    
-    dataset:
-      path: data/alpaca_train.jsonl
-      max_samples: 1000
-      eval_split: 0.05     # 5% evaluation set
-      train_size: 1000     # Teacher Model
-      eval_size: 100       # Teacher Model
-    
-    tasks:
-      types:
-        - extraction
-        - classification
-        - schema
-        - repair
-        - tool
-    
-    logging:
-      path: logs/data_generation/
-    
-    self_consistency:
-      samples: 1              # Not needed here (keep 1)
-    
-    
-    ###
-    # NEW: Training Configuration (Stage 1)
-    ###
-    
-    model:
-      name: microsoft/phi-3-mini-4k-instruct
-      max_length: 1024
-    
-    training:
-      output_dir: ./outputs/stage1
-      batch_size: 4
-      eval_batch_size: 4
-      gradient_accumulation_steps: 4
-      epochs: 3
-      learning_rate: 2e-5
-      logging_steps: 25
-      save_steps: 500
-      eval_steps: 500
-      bf16: true
-      
-    
-    lora:
-      r: 16
-      alpha: 32
-      dropout: 0.05
-      target_modules:
-        - q_proj
-        - k_proj
-        - v_proj
-        - o_proj
-    
-    ###
-    # NEW: Evaluation Configuration (Stage 4)
-    ###
-    evaluation:
-      alpaca_eval_path: data/eval/alpaca_eval.jsonl
-      json_eval_path: data/eval/json_eval.jsonl
-      output_dir: results/phase4
-      max_new_tokens: 256
-      judge_temperature: 0
-    
-    ###
-    # NEW: Training Configuration (Stage 2)
-    ###
-    stage2:
-      output_dir: ./outputs/stage2
-      learning_rates:
-        - 2e-5     # baseline
-        - 5e-5     # medium
-        - 1e-4     # high
-    
-      batch_size: 4
-      gradient_accumulation_steps: 4
-      epochs: 2
-    
-      checkpoint:
-        stage1_path: ./outputs/stage1
+            
+        ###
+        # Configuration for Teacher Dataset Generation
+        ###
+        
+        generation:
+          temperature: 0.2        # LOW = deterministic JSON
+          max_tokens: 512         # JSON doesn’t need huge outputs
+          retries: 3              # retry invalid JSON
+        
+        # Temperature: This temperature will help m,aintain consistency.
+        # Retries: This will help make sure there are no invalid json files.
+        
+        dataset:
+          path: data/alpaca_train.jsonl
+          max_samples: 1000
+          eval_split: 0.05     # 5% evaluation set
+          train_size: 1000     # Teacher Model
+          eval_size: 100       # Teacher Model
+        
+        tasks:
+          types:
+            - extraction
+            - classification
+            - schema
+            - repair
+            - tool
+        
+        logging:
+          path: logs/data_generation/
+        
+        self_consistency:
+          samples: 1              # Not needed here (keep 1)
+        
+        
+        ###
+        # NEW: Training Configuration (Stage 1)
+        ###
+        
+        model:
+          name: microsoft/phi-3-mini-4k-instruct
+          max_length: 1024
+        
+        training:
+          output_dir: ./outputs/stage1
+          batch_size: 4
+          eval_batch_size: 4
+          gradient_accumulation_steps: 4
+          epochs: 3
+          learning_rate: 2e-5
+          logging_steps: 25
+          save_steps: 500
+          eval_steps: 500
+          bf16: true
+          
+        
+        lora:
+          r: 16
+          alpha: 32
+          dropout: 0.05
+          target_modules:
+            - q_proj
+            - k_proj
+            - v_proj
+            - o_proj
+        
+        ###
+        # NEW: Evaluation Configuration (Stage 4)
+        ###
+        evaluation:
+          alpaca_eval_path: data/eval/alpaca_eval.jsonl
+          json_eval_path: data/eval/json_eval.jsonl
+          output_dir: results/phase4
+          output_dir_new: results/phase4_NEW
+          max_new_tokens: 256
+          judge_temperature: 0
+        
+        ###
+        # NEW: Training Configuration (Stage 2)
+        ###
+        stage2:
+          output_dir: ./outputs/stage2
+          learning_rates:
+            - 2e-5     # baseline
+            - 5e-5     # medium
+            - 1e-4     # high
+        
+          batch_size: 4
+          gradient_accumulation_steps: 4
+          epochs: 2
+        
+        
+        # Checkpoint Directories
+          checkpoint:
+            stage1_path: ./outputs/stage1
+            stage2_path: ./outputs/stage2
+            stage2_path_final: ./outputs/stage2_final
 
 (Dependencies)     
 The dependencies are in the requirements.txt file and setup_enev.sh.   
@@ -176,31 +181,13 @@ The model shows slight levels of forgetting. This showed that both models functi
 ## Ablation Study
 
 The accuracy for json structure was extremely low. In order to test if it was the fault of the training data, I desidded to test the learning rate of the model.    
-This albination study will also be used to test the level of forgetting (the effects the learning has on the alpaca score).    
-    
-ablation LR: 2e05      
+This albination study will also be used to test the level of forgetting (the effects the learning has on the alpaca score). Another important goal is to test whether the models are being propperly loaded. If learning rate has no impact, then it can be assumed that the models are either not training properly or are not loading propperly.   
 
-| Metric | Value |
-|------|------|
-| JSON Valid Rate | 0.0 |
-| JSON Teacher Pass Rate | 0.72 |
-| Alpaca Score | 8.03 |
+| Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
+| Stage 2: 2e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  
+| Stage 2: 5e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
+| Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 
-ablation LR: 5e05      
-
-| Metric | Value |
-|------|------|
-| JSON Valid Rate | 0.0 |
-| JSON Teacher Pass Rate | 0.72 |
-| Alpaca Score | 8.03 |
-
-ablation LR: .00001     
-
-| Metric | Value |
-|------|------|
-| JSON Valid Rate | 0.0 |
-| JSON Teacher Pass Rate | 0.72 |
-| Alpaca Score | 8.03 |
 
 # Analysis
 
@@ -213,9 +200,9 @@ After completing this project, the results revealed several trends. For some rea
 
 Looking at the initial results, it can be seen that there were issues. Stage 2 was not learning propperly. This is partially due to the dataset having bad examples. This lead to malformed json structure, but the teacher agent was able to understand what model 2 meant.     
 The original model is shown outperforming the trained models. This is also strange, as it should fail alpaca without any additional info. This sugjests that the original stage 1 model ended up being poisoned. In order to test for poisoning, the models will need to be retrained. Due to time constraints it will be dificult to run the entire project from start to end.        
-After the ablation study completed ...
+After the ablation study completed, it looks like model 2 is the issue. The results are likely the result of using the original model. There is likely an issue with how am loading or saving the model. This would explain the results, as model base likely had a better json valididty before undergoing training.    
    
-Final Improvements:
+Final Improvements:    
 
         Clean Training Data (Use a clean function to remove false training data.) - Completed
         Add Rules and Restrictions (Could help, but does not show if the model is working properly. It should default answer in json.) -Completed
