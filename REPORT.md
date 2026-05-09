@@ -158,7 +158,7 @@ Second Model Accuracy (Cleaned data for JSON training)
 Final Model Accuracy
 | Model Checkpoint | Alpaca Judge Score | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
 |------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|--------------|
-| Stage 0: Base | 7.92 | 0.215 | 0.866 | 0.359 | 0.359 | 0.0 | 0.158 |
+| Stage 0: Base | 7.65 | 0.215 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |  x
 | Stage 1: Alpaca | 7.65 | 0.216 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |
 | Stage 2: Teacher JSON | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
 
@@ -212,9 +212,9 @@ Second Ablation Study
 
 Final Ablation Study
 | Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
-| Stage 2: 2e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  |
-| Stage 2: 5e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  |
-| Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  |
+| Stage 2: 2e5 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
+| Stage 2: 5e5 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
+| Stage 2: 1e4 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
 
 # Analysis
 
