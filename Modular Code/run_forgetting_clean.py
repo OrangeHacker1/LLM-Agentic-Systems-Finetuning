@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from config.config_loader import load_config
 from stage4.teacher import call_teacher
-from stage_2_training.model import load_stage2_new_model, load_stage1_model
+from stage_2_training.model import load_stage2_merged_model, load_stage1_model
 
 from stage4.evaluator import generate_new
 
@@ -32,7 +32,7 @@ def main():
     model1, tokenizer = load_stage1_model()
 
     print("Loading Stage 2 model...")
-    model2, _ = load_stage2_new_model()
+    model2, _ = load_stage2_merged_model()
 
     # Load eval data
     with open(data_path, "r") as f:
