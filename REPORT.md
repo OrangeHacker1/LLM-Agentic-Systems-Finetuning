@@ -162,7 +162,7 @@ Final Model Accuracy
 | Stage 1: Alpaca | 7.65 | 0.216 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |
 | Stage 2: Teacher JSON | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
 
-Forgetting Analysis
+Second Forgetting Analysis
 
 | Metric | Value |
 |------|------|
@@ -170,6 +170,15 @@ Forgetting Analysis
 | Stage 2 Win Rate | 0.005 |
 | Tie Rate | 0.96 |
 | Forgetting Detected | Yes |
+
+Final Forgetting Analysis
+| Metric | Value |
+|------|------|
+| Stage 1 Win Rate | 0.035 |
+| Stage 2 Win Rate | 0.005 |
+| Tie Rate | 0.96 |
+| Forgetting Detected | Yes |
+
 
 ## Json Structure Evaluation
 
@@ -187,7 +196,8 @@ The alpach values remained stable throughout the three models.
 
 ## Forgetting Analysis
 
-The model shows slight levels of forgetting. This showed that both models functioned simillarly to each other.
+The model shows slight levels of forgetting. This was proportional to the slight improvements made to the model (stage 2). This shows thsat there is a trade off in order to increase the abilities of another ability.    
+
 
 ## Ablation Study
 
@@ -201,10 +211,10 @@ Second Ablation Study
 | Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 
 Final Ablation Study
-| Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
-| Stage 2: 2e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  
-| Stage 2: 5e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
-| Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
+| Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
+| Stage 2: 2e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  |
+| Stage 2: 5e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  |
+| Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  |
 
 # Analysis
 
