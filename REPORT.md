@@ -174,9 +174,9 @@ Second Forgetting Analysis
 Final Forgetting Analysis
 | Metric | Value |
 |------|------|
-| Stage 1 Win Rate | 0.035 |
-| Stage 2 Win Rate | 0.005 |
-| Tie Rate | 0.96 |
+| Stage 1 Win Rate | 0.56 |
+| Stage 2 Win Rate | 0.13 |
+| Tie Rate | 0.31 |
 | Forgetting Detected | Yes |
 
 
@@ -196,7 +196,7 @@ The alpach values remained stable throughout the three models.
 
 ## Forgetting Analysis
 
-The model shows slight levels of forgetting. This was proportional to the slight improvements made to the model (stage 2). This shows thsat there is a trade off in order to increase the abilities of another ability.    
+The model shows slight levels of forgetting in its intial view. This was proportional to the slight improvements made to the model (stage 2). This shows thsat there is a trade off in order to increase the abilities of another ability. The final forgetting test shows that the quality takes a major hit compared to the first model.   
 
 
 ## Ablation Study
@@ -226,7 +226,7 @@ sequential fine-tuning
 After completing this project, the results revealed several trends for the models. When it came to the alpacha average score, both models 1 and two maintained a high level of accuracy, around 8. This sugjests that the model retained most of its ability throughout the training. This is also explainable due to the amount of parameters being changed was not as high compared to the original model (8 billion). In terms of json accuracy, the json did see improvement, even without using the cleaning method used in the second run. However, the results were miniscule. This likely explains why the forgetting was not significant. The model did not have enough time or paraeters to train.    
 Looking at the teacher pass rates also reveals a greater difference. While model 2 wasn't able to replicate perfect / working json well, it did understand the task well. According to this project, the second model performed about twice as well as the initial model according to the teacher LLM.     
 In order to test what was causing this phenominon, I decided to do the same albanation again for the final one, especially since the code was already there and the deadline was aproaching. This albanation would show whether the model needed more time to learn the json patterns for improvement. If the models with higher training rates do start to improve, it is highly likely the the alpaca solving abilities will be impacted. This makes sense, as it is necessary to allocate and change weights to get different results, aka json formatting.     
-
+The albination study was unsuccessful since there was a failure during training. The model improperly loaded model 1 due to using an older command I hadn't replaced. This reveals the importance of properly formatting models during trraining, otherwise there will be catestropic failures. This is due the training pparameters for the third phase being negligable.      
     
   
    
@@ -234,7 +234,7 @@ Final Improvements:
 
         Clean Training Data (Use a clean function to remove false training data.) - Completed
         Add Rules and Restrictions (Could help, but does not show if the model is working properly. It should default answer in json.) -Completed
-        Add better prompt questions for generalization. -Failed due to similar reasons.
+        Add better prompt questions for generalization. -Failed due to similar reasons. An increase in temperature and some kind of randomness is needed. (An attempt with 90 to 100% could potentially work. However, the json formatting was good based on what I saw.)
 
 # Prompt Engineering
 
