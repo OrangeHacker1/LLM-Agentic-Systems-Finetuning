@@ -149,18 +149,18 @@ Initial Forgetting Analysis
 
 
 Second Model Accuracy (Cleaned data for JSON training)
-| Model Checkpoint | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
+| Model Checkpoint | Json Teacher Pass Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
 |------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|
 | Stage 0: Base | 0.567 | 0.215 | 0.866 | 0.359 | 0.359 | 0.0 |
 | Stage 1: Alpaca | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 | Stage 2: Teacher JSON | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 
 Final Model Accuracy
-| Model Checkpoint | Alpaca Judge Score | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
-|------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|
-| Stage 0: Base | 7.92 | 0.215 | 0.866 | 0.359 | 0.359 | 0.0 |
-| Stage 1: Alpaca | 7.65 | 0.216 | 0.863 | 0.0 | 0.0 | 0.0 |
-| Stage 2: Teacher JSON | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 |
+| Model Checkpoint | Alpaca Judge Score | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
+|------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|--------------|
+| Stage 0: Base | 7.92 | 0.215 | 0.866 | 0.359 | 0.359 | 0.0 | 0.158 |
+| Stage 1: Alpaca | 7.65 | 0.216 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |
+| Stage 2: Teacher JSON | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
 
 Forgetting Analysis
 
@@ -192,14 +192,19 @@ The model shows slight levels of forgetting. This showed that both models functi
 ## Ablation Study
 
 The accuracy for json structure was extremely low. In order to test if it was the fault of the training data, I desidded to test the learning rate of the model.    
-This albination study will also be used to test the level of forgetting (the effects the learning has on the alpaca score). Another important goal is to test whether the models are being propperly loaded. If learning rate has no impact, then it can be assumed that the models are either not training properly or are not loading propperly.   
+This albination study will also be used to test the level of forgetting (the effects the learning has on the alpaca score). Another important goal was to test whether the models are being propperly loaded. If learning rate has no impact, then it can be assumed that the models are either not training properly or are not loading propperly.   
 
-
-| Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
+Second Ablation Study
+| Learning Rate | Json Teacher Pass Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
 | Stage 2: 2e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  
 | Stage 2: 5e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 | Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 
+Final Ablation Study
+| Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match |
+| Stage 2: 2e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |  
+| Stage 2: 5e5 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
+| Stage 2: 1e4 | 0.563 | 0.216 | 0.863 | 0.129 | 0.128 | 0.0 |
 
 # Analysis
 
@@ -209,6 +214,7 @@ forgetting vs retention, what the results imply about
 sequential fine-tuning
 
 After completing this project, the results revealed several trends for the models. When it came to the alpacha average score, both models 1 and two maintained a high level of accuracy, around 8. This sugjests that the model retained most of its ability throughout the training. This is also explainable due to the amount of parameters being changed was not as high compared to the original model (8 billion). In terms of json accuracy, the json did see improvement, even without using the cleaning method used in the second run. However, the results were miniscule. This likely explains why the forgetting was not significant. The model did not have enough time or paraeters to train.    
+Looking at the teacher pass rates also reveals a greater difference. While model 2 wasn't able to replicate perfect / working json well, it did understand the task well. According to this project, the second model performed about twice as well as the initial model according to the teacher LLM.     
 In order to test what was causing this phenominon, I decided to do the same albanation again for the final one, especially since the code was already there and the deadline was aproaching. This albanation would show whether the model needed more time to learn the json patterns for improvement. If the models with higher training rates do start to improve, it is highly likely the the alpaca solving abilities will be impacted. This makes sense, as it is necessary to allocate and change weights to get different results, aka json formatting.     
 
     
@@ -230,6 +236,54 @@ Slight improvements were also made over itterations to better judge the models.
 Another prompt was used to make better questions to answer the schema questions, but the data resulted in the same output. This shouldn't have occurred since the temperature was at .50, but the data ran into the same issue. Unfortunately, there was no time for retraining and making a more in depth dataset, therefore this prompt was excluded due to not being used.    
 
 # Appendix: Full Prompts
+
+Alpaca_Judge:
+    
+    You are an expert evaluator.
+    
+    Instruction:
+    {instruction}
+    
+    Reference Answer:
+    {reference}
+    
+    Model Answer:
+    {prediction}
+    
+    Score the model answer from 1 to 10 based on:
+    - correctness
+    - completeness
+    - clarity
+    
+    Scoring:
+    10 = excellent
+    7 = good
+    5 = partially correct
+    3 = poor
+    1 = incorrect
+    
+    Return ONLY a number (1-10).
+
+Forgetting Analysis:
+    
+    You are comparing two model outputs.
+    
+    Instruction:
+    {instruction}
+    
+    Reference Answer:
+    {reference}
+    
+    Model A (Checkpoint 1):
+    {output_a}
+    
+    Model B (Checkpoint 2):
+    {output_b}
+    
+    Which is better?
+    
+    Return ONLY:
+    A or B or TIE
 
 Judge Prompt: (Stored in a Python File)
 
