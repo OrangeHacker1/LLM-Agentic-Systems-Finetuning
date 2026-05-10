@@ -250,7 +250,16 @@ def load_stage2_merged_model():
         stage2_path
     )
 
+    #
+    # Inference settings
+    #
     final_model.config.use_cache = False
+
+    #
+    # IMPORTANT:
+    # Put model into inference mode
+    #
+    final_model.eval()
 
     return final_model, tokenizer
 
@@ -308,6 +317,159 @@ def load_ablation_model(stage2_adapter_path):
 
     return model, tokenizer
 
+#
+#   Merged Model for stage2 training.
+#
+def load_stage1_merged_for_stage2_training():
+    """
+    Correct Stage2 training loader.
+
+    Pipeline:
+        1. Load base model
+        2. Load Stage1 adapter
+        3. Merge Stage1 into base weights
+        4. Return merged model
+           (NO active adapters)
+
+    This is the correct way to perform
+    sequential LoRA training.
+    """
+
+    config = load_config()
+
+    model_name = config["model"]["name"]
+
+    stage1_path = config["stage2"]["checkpoint"]["stage1_path"]
+
+    print("Loading tokenizer...")
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name
+    )
+
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    print("Loading base model...")
+
+    base_model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        device_map={"": 0},
+        torch_dtype=torch.float16,
+        low_cpu_mem_usage=True
+    )
+
+    #
+    # Load Stage1 adapter
+    #
+    print(f"Loading Stage1 adapter from {stage1_path}...")
+
+    stage1_model = PeftModel.from_pretrained(
+        base_model,
+        stage1_path
+    )
+
+    #
+    # Merge Stage1 into base model
+    #
+    print("Merging Stage1 into base model...")
+
+    merged_model = stage1_model.merge_and_unload()
+
+    merged_model.config.use_cache = False
+
+    print("Stage1 merged successfully.")
+
+    return merged_model, tokenizer
+
+
+def load_trained_ablation_model(stage2_adapter_path):
+    """
+    Correct ablation inference loader.
+
+    This loader properly handles sequential LoRA training.
+
+    Training flow:
+        Base Model
+            -> Stage1 LoRA training
+            -> Stage2 LoRA training (trained ON TOP OF Stage1)
+
+    Correct inference flow:
+        1. Load base model
+        2. Load Stage1 adapter
+        3. Merge Stage1 into base weights
+        4. Load ablation Stage2 adapter
+        5. Return final model
+
+    This prevents the common PEFT issue where:
+        model.set_adapter("stage2")
+
+    accidentally disables Stage1 behavior.
+
+    Each ablation model will now truly represent:
+        Base + Stage1 + Specific Stage2 LR
+    """
+
+    config = load_config()
+
+    model_name = config["model"]["name"]
+
+    stage1_path = config["stage2"]["checkpoint"]["stage1_path"]
+
+    print("Loading tokenizer...")
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_name
+    )
+
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    print("Loading base model...")
+
+    base_model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        device_map={"": 0},
+        torch_dtype=torch.float16,
+        low_cpu_mem_usage=True
+    )
+
+    #
+    # STEP 1:
+    # Load Stage1 adapter
+    #
+    print(f"Loading Stage1 adapter from {stage1_path}...")
+
+    stage1_model = PeftModel.from_pretrained(
+        base_model,
+        stage1_path
+    )
+
+    #
+    # STEP 2:
+    # Merge Stage1 into base model
+    #
+    print("Merging Stage1 weights into base model...")
+
+    merged_model = stage1_model.merge_and_unload()
+
+    #
+    # STEP 3:
+    # Load Stage2 ablation adapter
+    #
+    print(f"Loading Stage2 ablation adapter from {stage2_adapter_path}...")
+
+    final_model = PeftModel.from_pretrained(
+        merged_model,
+        stage2_adapter_path
+    )
+
+    final_model.config.use_cache = False
+
+    print("Ablation model loaded successfully.")
+    print("Active model = Base + Stage1 merged + Stage2 ablation")
+
+    return final_model, tokenizer
 
 
 def load_model(config, stage2_cfg):
