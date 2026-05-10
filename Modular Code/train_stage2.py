@@ -1,4 +1,4 @@
-from stage_2_training.model import load_stage1_model
+from stage_2_training.model import load_stage1_merged_for_stage2_training
 from stage_2_training.dataset import load_and_prepare_dataset
 from stage_2_training.trainer import get_trainer
 
@@ -25,7 +25,7 @@ def main():
     #
     print("Loading tokenizer and dataset...")
 
-    temp_model, tokenizer = load_stage1_model()
+    temp_model, tokenizer = load_stage1_merged_for_stage2_training()
 
     train_dataset, eval_dataset = load_and_prepare_dataset(tokenizer)
 
@@ -66,7 +66,7 @@ def main():
         #
         print("Loading fresh Stage 1 model...")
 
-        model, tokenizer = load_stage1_model()
+        model, tokenizer = load_stage1_merged_for_stage2_training()
 
         #
         # Create NEW Stage 2 LoRA adapter
@@ -85,12 +85,36 @@ def main():
         )
 
         # ✅ ADD adapter properly (DO NOT wrap again)
-        model.add_adapter("stage2", lora_config)
+        #model.add_adapter("stage2", lora_config)
 
         # ✅ Activate it
-        model.set_adapter("stage2")
+        #model.set_adapter("stage2")
+        #
+        # CORRECT:
+        # Create fresh PEFT model
+        #
+        model = get_peft_model(
+            model,
+            lora_config
+        )
+        #model.print_trainable_parameters()
 
+        #
+        # CRITICAL FIX:
+        # Re-enable gradient flow after merge
+        #
+        model.enable_input_require_grads()
+
+        #
+        # Recommended for training stability
+        #
+        model.train()
+
+        #
+        # Verify trainable params
+        #
         model.print_trainable_parameters()
+
 
         #
         # Initialize trainer
