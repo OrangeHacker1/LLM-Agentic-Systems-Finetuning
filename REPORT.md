@@ -216,7 +216,7 @@ Final Ablation Study
 | Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
 | Stage 2: 2e5 | 7.625 | 0.253 | 0.873 | 0.001 | 0.001 | 0.0075 | 0.238 |
 | Stage 2: 5e5 | 8.078 | 0.355 | 0.898 | 0.15 | 0.149 | 0.0275 | 0.467 |
-| Stage 2: 1e4 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
+| Stage 2: 1e4 | 8.143 | 0.361 | 0.899 | 0.002 | 0.025 | 0.025 | 0.438 |
 
 # Analysis
 
@@ -228,8 +228,8 @@ sequential fine-tuning
 After completing this project, the results revealed several trends for the models. When it came to the alpacha average score, both models 1 and two maintained a high level of accuracy, around 8. This sugjests that the model retained most of its ability throughout the training. This is also explainable due to the amount of parameters being changed was not as high compared to the original model (8 billion). In terms of json accuracy, the json did see improvement, even without using the cleaning method used in the second run. However, the results were miniscule. This likely explains why the forgetting was not significant. The model did not have enough time or paraeters to train.    
 Looking at the teacher pass rates also reveals a greater difference. While model 2 wasn't able to replicate perfect / working json well, it did understand the task well. According to this project, the second model performed about twice as well as the initial model according to the teacher LLM.     
 In order to test what was causing this phenominon, I decided to do the same albanation again for the final one, especially since the code was already there and the deadline was aproaching. This albanation would show whether the model needed more time to learn the json patterns for improvement. If the models with higher training rates do start to improve, it is highly likely the the alpaca solving abilities will be impacted. This makes sense, as it is necessary to allocate and change weights to get different results, aka json formatting.     
-The albination study was unsuccessful since there was a failure during training. After retraining the models, it was shown that increasing the learning rate was able to increase the level json accuracy. This shows that the project is working as intended is immproving the json formatting during stage 2 trainig / Phase 3.      
-  
+The albination study was unsuccessful since there was a failure during training. After retraining the models, it was shown that increasing the learning rate was able to increase the level json accuracy. This shows that the project is working as intended is immproving the json formatting during stage 2 trainig / Phase 3. Although, overfitting seemse to occur woth a learning rate '1e4'.      
+Another important observation is that the Alpacha_average_Score can exceed 10.0. LLMs can make mistakes. There should be a validation method to make sure the score does not exceed 10.0. This would be a great improvement to the project.     
    
 Final Improvements:    
 
