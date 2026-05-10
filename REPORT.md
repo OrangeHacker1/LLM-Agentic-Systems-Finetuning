@@ -160,7 +160,7 @@ Final Model Accuracy
 |------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|--------------|
 | Stage 0: Base | 7.65 | 0.215 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |  x
 | Stage 1: Alpaca | 7.65 | 0.216 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |
-| Stage 2: Teacher JSON | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
+| Stage 2: Teacher JSON | 7.69 | 0.249 | 0.872 | 0.001 | 0.001 | 0.0075 | 0.213 |
 
 Second Forgetting Analysis
 
@@ -185,7 +185,8 @@ Final Forgetting Analysis
 While doing this project, there were three main runs.   
 Initially, the first major run revealed a flaw in the initial dataset. This led to a 0% for the jason validity for the jason teacher dataseet. Due to an error found early on, the first and base models were skipped.       
 The second run was done with a more generous json validater, as shown above. This revealed that there was an issue loading the lora models. After fixing the lora model, it was revealed that there was
-After going over the training data, I created a new dataset. This dataset was cleaned to ensure that the data sent would be valid sintax for json. After running the training for stage 3 again, the model started properly answering with json formatting, although the results were low. Although this is also shown in the base model. An error occurred in the new json load. This would require changing to the original check.      
+After going over the training data, I created a new dataset. This dataset was cleaned to ensure that the data sent would be valid sintax for json. After running the training for stage 3 again, the model started properly answering with json formatting, although the results were low. Although this is also shown in the base model. An error occurred in the new json load. This would require changing to the original check.     
+
 
 
 ## Alpacha Evaluation
@@ -197,6 +198,7 @@ The alpach values remained stable throughout the three models.
 ## Forgetting Analysis
 
 The model shows slight levels of forgetting in its intial view. This was proportional to the slight improvements made to the model (stage 2). This shows thsat there is a trade off in order to increase the abilities of another ability. The final forgetting test shows that the quality takes a major hit compared to the first model.   
+This shows that the alpacha Judge score does not reflect a perfect match to accuracy, as the stage 2 model outperformed initially. The forgetting analysis implies forgetting, or a hit to quality, as the Judge model had a significant advantage.     
 
 
 ## Ablation Study
@@ -212,8 +214,8 @@ Second Ablation Study
 
 Final Ablation Study
 | Learning Rate | Alpaca Judge Win Rate | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
-| Stage 2: 2e5 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
-| Stage 2: 5e5 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
+| Stage 2: 2e5 | 7.625 | 0.253 | 0.873 | 0.001 | 0.001 | 0.0075 | 0.238 |
+| Stage 2: 5e5 | 8.078 | 0.355 | 0.898 | 0.15 | 0.149 | 0.0275 | 0.467 |
 | Stage 2: 1e4 | 7.87 | 0.212 | 0.860 | 0.002 | 0.002 | 0.0 | 0.314 |
 
 # Analysis
@@ -221,13 +223,12 @@ Final Ablation Study
 Qualitative comparison of outputs across
 checkpoints, failure case analysis, discussion of
 forgetting vs retention, what the results imply about
-sequential fine-tuning
+sequential fine-tuning       
 
 After completing this project, the results revealed several trends for the models. When it came to the alpacha average score, both models 1 and two maintained a high level of accuracy, around 8. This sugjests that the model retained most of its ability throughout the training. This is also explainable due to the amount of parameters being changed was not as high compared to the original model (8 billion). In terms of json accuracy, the json did see improvement, even without using the cleaning method used in the second run. However, the results were miniscule. This likely explains why the forgetting was not significant. The model did not have enough time or paraeters to train.    
 Looking at the teacher pass rates also reveals a greater difference. While model 2 wasn't able to replicate perfect / working json well, it did understand the task well. According to this project, the second model performed about twice as well as the initial model according to the teacher LLM.     
 In order to test what was causing this phenominon, I decided to do the same albanation again for the final one, especially since the code was already there and the deadline was aproaching. This albanation would show whether the model needed more time to learn the json patterns for improvement. If the models with higher training rates do start to improve, it is highly likely the the alpaca solving abilities will be impacted. This makes sense, as it is necessary to allocate and change weights to get different results, aka json formatting.     
-The albination study was unsuccessful since there was a failure during training. The model improperly loaded model 1 due to using an older command I hadn't replaced. This reveals the importance of properly formatting models during trraining, otherwise there will be catestropic failures. This is due the training pparameters for the third phase being negligable.      
-    
+The albination study was unsuccessful since there was a failure during training. After retraining the models, it was shown that increasing the learning rate was able to increase the level json accuracy. This shows that the project is working as intended is immproving the json formatting during stage 2 trainig / Phase 3.      
   
    
 Final Improvements:    
