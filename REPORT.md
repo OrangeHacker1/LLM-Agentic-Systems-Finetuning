@@ -158,7 +158,7 @@ Second Model Accuracy (Cleaned data for JSON training)
 Final Model Accuracy
 | Model Checkpoint | Alpaca Judge Score | ROUGE-L | BERTScore | JSON Validity | Schema Compliance | Exact Match | Json Teacher Pass Rate |
 |------------------|-----------------------|-----------|----------|---------------|-------------------|-------------|--------------|
-| Stage 0: Base | 7.65 | 0.215 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |  x
+| Stage 0: Base | 12.75 | 0.215 | 0.866 | 0.01 | 0.0 | 0.01 | 0.091 |
 | Stage 1: Alpaca | 7.65 | 0.216 | 0.863 | 0.0 | 0.0 | 0.0 | 0.158 |
 | Stage 2: Teacher JSON | 7.69 | 0.249 | 0.872 | 0.001 | 0.001 | 0.0075 | 0.213 |
 
@@ -174,9 +174,9 @@ Second Forgetting Analysis
 Final Forgetting Analysis
 | Metric | Value |
 |------|------|
-| Stage 1 Win Rate | 0.56 |
-| Stage 2 Win Rate | 0.13 |
-| Tie Rate | 0.31 |
+| Stage 1 Win Rate | 0.468|
+| Stage 2 Win Rate | 0.138 |
+| Tie Rate | 0.395 |
 | Forgetting Detected | Yes |
 
 
