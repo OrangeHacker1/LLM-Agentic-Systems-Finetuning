@@ -3,7 +3,7 @@ import json
 
 from config.config_loader import load_config
 
-from stage_2_training.model import load_ablation_model
+from stage_2_training.model import load_trained_ablation_model
 
 from stage4.evaluator import (
     evaluate_new_json,
@@ -53,7 +53,13 @@ def main():
         #
         # Load model
         #
-        model, tokenizer = load_ablation_model(model_path)
+        model, tokenizer = load_trained_ablation_model(model_path)
+
+
+        print(f"Loaded ablation model from: {model_path}")
+
+        if hasattr(model, "active_adapters"):
+            print("Active adapters:", model.active_adapters)
 
         #
         # JSON evaluation
